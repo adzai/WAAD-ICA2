@@ -112,8 +112,9 @@ async function incrementAnswer(id, sessionId) {
 
 // Returns all questions
 app.get("/questions", function (req, res) {
-  const sql = "SELECT * FROM questions";
-  pool.query(sql, [], (err, data) => {
+  const sql =
+    "SELECT id, name, IF(session_id=?, TRUE, FALSE) as canDelete FROM questions";
+  pool.query(sql, [req.session.id], (err, data) => {
     if (err) {
       logger.error(err);
       res.status(500).json({ error: "Internal server error" });

@@ -24,7 +24,7 @@
                    id: "question"})}>
                 <strong>Question {question.id}: </strong>
                    {question.name}</Link>
-         {#if question.canDelete}
+         {#if question.canDelete === 1}
                 <button class="button roundButton">Delete</button>
          {/if}
           </li>
