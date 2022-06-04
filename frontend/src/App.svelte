@@ -1,18 +1,28 @@
 <script>
-    import url from './url'
-    import Home from './Home.svelte'
-    import ViewQuestion from './ViewQuestion.svelte'
-    import CreateQuestion from './CreateQuestion.svelte'
+    import router from "page";
+
+    import Home from './routes/Home.svelte'
+    import ViewQuestion from './routes/ViewQuestion.svelte'
+    import CreateQuestion from './routes/CreateQuestion.svelte'
+// Routing issues: https://github.com/sveltejs/kit/issues/2664
+let page;
+let params;
+router('/', () => page = Home)
+router('/questions/:id', (ctx, next) => {
+  	params = ctx.params
+  	next()},  () => page = ViewQuestion)
+router('/create', () => page = CreateQuestion)
+
+router.start()
+
 </script>
 
 <main>
-    {#if $url.hash === '' || $url.hash === '#/'}
-      <Home/>
-    {:else if $url.hash === '#/create-question'}
-      <CreateQuestion/>
-    {:else if $url.hash.includes('#/question/')}
-      <ViewQuestion questionId={$url.hash.split("/").pop()}/>
-    {:else}
-      <h1>404</h1>
+    {#if page === Home}
+    <Home/>
+    {:else if page === CreateQuestion}
+    <CreateQuestion/>
+    {:else if page === ViewQuestion}
+    <ViewQuestion {params}/>
     {/if}
 </main>

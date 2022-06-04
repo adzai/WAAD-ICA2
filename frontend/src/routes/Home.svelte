@@ -1,5 +1,6 @@
 <script>
     import ViewQuestion from "./ViewQuestion.svelte"
+    import CreateQuestion from "./CreateQuestion.svelte"
     const fetchQuestions = (async () => {
     const response = await fetch('http://localhost:3000/questions')
     return await response.json()
@@ -8,7 +9,7 @@
 
 <h1>Q&A app</h1>
 <div class=buttonDiv>
-    <a href="#/create-question" class="button createButton link" >Create a new question</a>
+    <a class="link createButton button" href="/create"> Create a new question</a>
 </div>
 <h2>List of active questions</h2>
 {#await fetchQuestions}
@@ -17,9 +18,9 @@
     <ul>
         {#each questions as question}
           <li>
-            <button class="button roundButton">
+            <button on:click={() => window.location.href=`/questions/${question.id}`} class="button roundButton">
                 <strong>Question {question.id}: </strong>
-                    <a class="link" id="question" href={`#/question/${question.id}`}>{question.name}</a>
+                    <a href={`/questions/${question.id}`} class="link" id="question">{question.name}</a>
             </button>
          {#if question.canDelete}
                 <button class="button roundButton">Delete</button>

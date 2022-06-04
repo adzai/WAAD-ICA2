@@ -1,7 +1,13 @@
 <script>
-    export let questionId;
+    import { onMount } from "svelte";
+    export let params;
+    const getID = async () => {
+        console.log(params.id);
+    };
+    /* onMount(getID()); */
+
     const fetchQuestion = (async () => {
-    const response = await fetch(`http://localhost:3000/questions/${questionId}`)
+    const response = await fetch(`http://localhost:3000/questions/${params.id}`)
     return await response.json()
 	})()
 </script>
