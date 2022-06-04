@@ -1,6 +1,7 @@
 <script>
     import ViewQuestion from "./ViewQuestion.svelte"
-    import CreateQuestion from "./CreateQuestion.svelte"
+    import { Link } from "svelte-routing";
+    /* import url from './url' */
     const fetchQuestions = (async () => {
     const response = await fetch('http://localhost:3000/questions')
     return await response.json()
@@ -9,7 +10,7 @@
 
 <h1>Q&A app</h1>
 <div class=buttonDiv>
-    <a class="link createButton button" href="/create"> Create a new question</a>
+    <Link getProps={() => ({ class: "link createButton button" })} to="/create"> Create a new question</Link>
 </div>
 <h2>List of active questions</h2>
 {#await fetchQuestions}
@@ -18,10 +19,11 @@
     <ul>
         {#each questions as question}
           <li>
-            <button on:click={() => window.location.href=`/questions/${question.id}`} class="button roundButton">
+                    <Link to={`/question/${question.id}`}
+                   getProps={() => ({ class: "link button roundButton",
+                   id: "question"})}>
                 <strong>Question {question.id}: </strong>
-                    <a href={`/questions/${question.id}`} class="link" id="question">{question.name}</a>
-            </button>
+                   {question.name}</Link>
          {#if question.canDelete}
                 <button class="button roundButton">Delete</button>
          {/if}
@@ -35,6 +37,7 @@
 <style>
     .link {
         text-decoration: none;
+        color: red;
     }
 
     #question {

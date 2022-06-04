@@ -1,15 +1,25 @@
 <script>
-    import { onMount } from "svelte";
-    export let params;
-    const getID = async () => {
-        console.log(params.id);
-    };
+    export let questionId;
     /* onMount(getID()); */
 
     const fetchQuestion = (async () => {
-    const response = await fetch(`http://localhost:3000/questions/${params.id}`)
+    const response = await fetch(`http://localhost:3000/questions/${questionId}`)
     return await response.json()
 	})()
+
+    function vote(answerId) {
+        fetch(`http://localhost:3000/answers/${answerId}`,
+{
+        credentials: "same-origin",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: "POST",
+})
+    .then(function(res){ console.log(res) })
+    .catch(function(res){ console.log(res) })
+    }
 </script>
 
 <h1>HI</h1>
@@ -17,9 +27,12 @@
     <p>...waiting</p>
 {:then data}
     <ul>
-        {#each data[Object.keys(data)[0]] as answerName}
+        {#each data[Object.keys(data)[0]] as answer}
           <li>
-          {answerName}
+          <button on:click={() => vote (answer.id)}>{answer.name}</button>
+          {#if answer.voted}
+          <span>Voted</span>
+          {/if}
           </li>
         {/each}
       </ul>

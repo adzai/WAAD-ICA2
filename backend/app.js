@@ -82,10 +82,22 @@ async function incrementAnswer(id, sessionId) {
         if (err) {
           logger.error(err);
         } else {
-          await connection.query(
-            "UPDATE answers SET counter = counter + 1 WHERE id=?",
-            [id]
-          );
+          console.log(data);
+          console.log(sessionId);
+          if (data.length === 0) {
+            await connection.query(
+              "UPDATE answers SET counter = counter + 1 WHERE id=?",
+              [id]
+            );
+            await connection.query(
+              "UPDATE answers SET counter = counter + 1 WHERE id=?",
+              [id]
+            );
+            await connection.query(
+              "INSERT INTO users_answers (session_id, answer_id) VALUES (?,?)",
+              [sessionId, id]
+            );
+          }
         }
       }
     );
@@ -100,7 +112,7 @@ async function incrementAnswer(id, sessionId) {
 
 // Returns all questions
 app.get("/questions", function (req, res) {
-  var sql = "SELECT * FROM questions";
+  const sql = "SELECT * FROM questions";
   pool.query(sql, [], (err, data) => {
     if (err) {
       logger.error(err);
@@ -182,7 +194,11 @@ app.get("/questions/:id", function (req, res) {
           let ret = {};
           ret[key] = [];
           for (const item of data) {
-            ret[item.question_name].push([item.name]);
+            ret[item.question_name].push({
+              name: item.name,
+              voted: !item.sessoin_id === null,
+              id: item.id,
+            });
           }
           res.send(ret);
         }
@@ -191,7 +207,7 @@ app.get("/questions/:id", function (req, res) {
   );
 });
 
-app.post("/questions/:id", function (req, res) {
+app.post("/answers/:id", function (req, res) {
   incrementAnswer(req.params.id, req.session.id);
   res.send("Success");
 });

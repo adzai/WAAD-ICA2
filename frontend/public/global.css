@@ -17,10 +17,6 @@ a {
 	text-decoration: none;
 }
 
-a, a:visited, a:hover, a:active {
-  color: inherit;
-}
-
 label {
 	display: block;
 }
@@ -97,6 +93,7 @@ button:focus {
     .roundButton {
       border-radius: 8px;
       background-color: #444444;
+      color: white;
     }
 
     .roundButton:hover {
