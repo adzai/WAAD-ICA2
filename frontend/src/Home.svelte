@@ -1,4 +1,5 @@
 <script>
+    import ViewQuestion from "./ViewQuestion.svelte"
     const fetchQuestions = (async () => {
     const response = await fetch('http://localhost:3000/questions')
     return await response.json()
@@ -18,8 +19,11 @@
           <li>
             <button class="button roundButton">
                 <strong>Question {question.id}: </strong>
-                    <a class="link" id="question">{question.name}</a>
+                    <a class="link" id="question" href={`#/question/${question.id}`}>{question.name}</a>
             </button>
+         {#if question.canDelete}
+                <button class="button roundButton">Delete</button>
+         {/if}
           </li>
         {/each}
       </ul>

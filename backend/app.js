@@ -63,13 +63,31 @@ pool.query(initSQL, (err, data) => {
 });
 
 // Example of incrementing answer counter
-async function incrementAnswer(id) {
+async function incrementAnswer(id, sessionId) {
+  const connection = await new Promise((resolve, reject) => {
+    pool.getConnection((ex, connection) => {
+      if (ex) {
+        reject(ex);
+      } else {
+        resolve(connection);
+      }
+    });
+  });
   try {
-    const connection = await pool.getConnection();
     await connection.beginTransaction();
     await connection.query(
-      "UPDATE answers SET counter = counter + 1 WHERE id=?",
-      [id]
+      "SELECT answer_id FROM users_answers WHERE answer_id=? AND session_id=?",
+      [id, sessionId],
+      async (err, data) => {
+        if (err) {
+          logger.error(err);
+        } else {
+          await connection.query(
+            "UPDATE answers SET counter = counter + 1 WHERE id=?",
+            [id]
+          );
+        }
+      }
     );
     await connection.commit();
   } catch (e) {
@@ -96,28 +114,87 @@ app.get("/questions", function (req, res) {
   });
 });
 
+async function insertQuestion(req, res) {
+  const connection = await new Promise((resolve, reject) => {
+    pool.getConnection((ex, connection) => {
+      if (ex) {
+        reject(ex);
+      } else {
+        resolve(connection);
+      }
+    });
+  });
+  try {
+    await connection.beginTransaction();
+    await connection.query(
+      "INSERT INTO questions(name,session_id) VALUES(?,?)",
+      [req.body.question, req.session.id],
+      async (err, data) => {
+        if (err) {
+          logger.error(err);
+        } else {
+          logger.debug(`Question inserted by id ${req.session.id}`);
+          logger.debug(`Data: ${JSON.stringify(data)}`);
+          for (const answer of req.body.answers) {
+            await connection.query(
+              "INSERT INTO answers(name,question_id) VALUES(?,?)",
+              [answer, data.insertId],
+              async (err, data) => {
+                if (err) {
+                  logger.error(err);
+                } else {
+                  logger.debug(`Answer inserted by id ${req.session.id}`);
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+    await connection.commit();
+  } catch (e) {
+    await connection.rollback();
+    throw e;
+  } finally {
+    await connection.release();
+  }
+}
 // Inserts a new user to the test_table.
 // POST params are: id, name, value
 // Returns the sql error message if there was a problem inserting
 app.post("/questions", function (req, res) {
-  // TODO: must accept answers as well
+  insertQuestion(req, res).then();
+});
+
+app.get("/questions/:id", function (req, res) {
   pool.query(
-    "INSERT INTO questions(name,session_id) VALUES(?,?)",
-    [req.body.question, req.session.id],
+    "SELECT q.name as question_name, a.name, a.counter, a.id, ua.session_id FROM questions q LEFT JOIN answers a ON q.id=a.question_id LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE q.id=?",
+    [req.params.id],
     (err, data) => {
       if (err) {
         logger.error(err);
-        res.status(500).json({
-          error: "Couldn't insert into the database: " + err.sqlMessage,
-        });
+        res.status(500).json({ error: "Internal server error" });
       } else {
-        logger.debug(`Question inserted by id ${req.session.id} successfully`);
-        res.send("Success");
+        if (data.length === 0) {
+          res.send({});
+        } else {
+          const key = data[0].question_name;
+          let ret = {};
+          ret[key] = [];
+          for (const item of data) {
+            ret[item.question_name].push([item.name]);
+          }
+          res.send(ret);
+        }
       }
     }
   );
 });
 
+app.post("/questions/:id", function (req, res) {
+  incrementAnswer(req.params.id, req.session.id);
+  res.send("Success");
+});
 // Deletes a question from the questions table based on provided id.
 // Returns a 404 if id not found.
 app.delete("/questions/:id", function (req, res) {

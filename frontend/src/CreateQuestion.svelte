@@ -37,7 +37,6 @@ import { createEventDispatcher } from 'svelte';
         } else {
             errors["answers"] = false;
         }
-        console.log("HERE")
         fetch("/questions",
 {
     headers: {
