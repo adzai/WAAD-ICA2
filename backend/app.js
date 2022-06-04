@@ -103,7 +103,7 @@ app.post("/questions", function (req, res) {
   // TODO: must accept answers as well
   pool.query(
     "INSERT INTO questions(name,session_id) VALUES(?,?)",
-    [req.body.name, req.session.id],
+    [req.body.question, req.session.id],
     (err, data) => {
       if (err) {
         logger.error(err);
@@ -111,6 +111,7 @@ app.post("/questions", function (req, res) {
           error: "Couldn't insert into the database: " + err.sqlMessage,
         });
       } else {
+        logger.debug(`Question inserted by id ${req.session.id} successfully`);
         res.send("Success");
       }
     }
