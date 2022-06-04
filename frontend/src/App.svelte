@@ -13,9 +13,7 @@
     <Router url="{url}">
       <div>
         <Route path="/"><Home /></Route>
-         <Route path="question/:id" let:params>
-          <ViewQuestion questionId="{params.id}" />
-        </Route>
+         <Route path="question/:id" component="{ViewQuestion}"/>
         <Route path="create" component="{CreateQuestion}" />
       </div>
     </Router>

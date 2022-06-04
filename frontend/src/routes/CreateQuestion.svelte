@@ -1,7 +1,4 @@
 <script>
-import { createEventDispatcher } from 'svelte';
-
-	const dispatch = createEventDispatcher();
     let errors = {}
 
     function validateForm(data) {
@@ -46,7 +43,7 @@ import { createEventDispatcher } from 'svelte';
     method: "POST",
     body: JSON.stringify({question: question, answers: answers})
 })
-.then(function(res){ console.log(res) })
+.then(function(res){ window.location.href = "/"})
 .catch(function(res){ console.log(res) })
     }
 </script>

@@ -76,19 +76,18 @@ async function incrementAnswer(id, sessionId) {
   try {
     await connection.beginTransaction();
     await connection.query(
-      "SELECT answer_id FROM users_answers WHERE answer_id=? AND session_id=?",
+      "SELECT answer_id FROM answers a LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE a.question_id=(SELECT question_id FROM answers a WHERE a.id=? LIMIT 1) AND ua.session_id=?",
       [id, sessionId],
       async (err, data) => {
+        logger.debug("INFO");
+        logger.debug(data);
         if (err) {
           logger.error(err);
+        } else if (data.length !== 0) {
+          logger.debug(JSON.stringify(data));
+          logger.info("User already voted!");
         } else {
-          console.log(data);
-          console.log(sessionId);
           if (data.length === 0) {
-            await connection.query(
-              "UPDATE answers SET counter = counter + 1 WHERE id=?",
-              [id]
-            );
             await connection.query(
               "UPDATE answers SET counter = counter + 1 WHERE id=?",
               [id]
@@ -97,6 +96,8 @@ async function incrementAnswer(id, sessionId) {
               "INSERT INTO users_answers (session_id, answer_id) VALUES (?,?)",
               [sessionId, id]
             );
+          } else {
+            logger.info("No data found");
           }
         }
       }
@@ -104,7 +105,6 @@ async function incrementAnswer(id, sessionId) {
     await connection.commit();
   } catch (e) {
     await connection.rollback();
-    throw e;
   } finally {
     await connection.release();
   }
@@ -176,11 +176,12 @@ async function insertQuestion(req, res) {
 // Returns the sql error message if there was a problem inserting
 app.post("/questions", function (req, res) {
   insertQuestion(req, res).then();
+  res.send();
 });
 
 app.get("/questions/:id", function (req, res) {
   pool.query(
-    "SELECT q.name as question_name, a.name, a.counter, a.id, ua.session_id FROM questions q LEFT JOIN answers a ON q.id=a.question_id LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE q.id=?",
+    "SELECT DISTINCT q.name as question_name, a.name, a.counter, a.id FROM answers a LEFT JOIN questions q ON q.id=a.question_id LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE q.id=? ORDER BY a.id",
     [req.params.id],
     (err, data) => {
       if (err) {
@@ -196,7 +197,6 @@ app.get("/questions/:id", function (req, res) {
           for (const item of data) {
             ret[item.question_name].push({
               name: item.name,
-              voted: !item.sessoin_id === null,
               id: item.id,
             });
           }
@@ -207,9 +207,46 @@ app.get("/questions/:id", function (req, res) {
   );
 });
 
+app.get("/stats/:id", (req, res) => {
+  pool.query(
+    "SELECT answer_id FROM answers a LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE a.question_id=? AND ua.session_id=?",
+    [req.params.id, req.session.id],
+    (err, data) => {
+      if (err) {
+        logger.error(err);
+      } else if (data.length !== 0) {
+        pool.query(
+          "SELECT DISTINCT id, name, counter, session_id FROM answers LEFT JOIN users_answers ON answers.id = users_answers.answer_id WHERE question_id=?",
+          [req.params.id],
+          (err, data) => {
+            if (err) {
+              res.status(500).json({ error: "Internal server error" });
+            } else {
+              let collected = {};
+              for (const elements of data) {
+                const key = collected[elements.id];
+                if (!key || !key.voted) {
+                  collected[elements.id] = {
+                    name: elements.name,
+                    counter: elements.counter,
+                    voted: elements.session_id === req.session.id,
+                  };
+                }
+              }
+              res.send(collected);
+            }
+          }
+        );
+      } else {
+        res.send([]);
+      }
+    }
+  );
+});
+
 app.post("/answers/:id", function (req, res) {
   incrementAnswer(req.params.id, req.session.id);
-  res.send("Success");
+  res.send();
 });
 // Deletes a question from the questions table based on provided id.
 // Returns a 404 if id not found.
