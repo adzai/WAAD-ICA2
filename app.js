@@ -7,7 +7,6 @@ const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const app = express();
 const cors = require("cors");
-const port = 3000; // Port the server will listen on
 
 // Needed for POST request
 app.use(express.json()); // parses incoming requests with JSON payloads
@@ -19,6 +18,7 @@ app.use(morgan("common"));
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+const port = process.env.PORT || 3000; // Port the server will listen on
 app.use(express.static(path.join(__dirname, "./client/public")));
 
 // Initializes a connection pool with up to 100 connections,

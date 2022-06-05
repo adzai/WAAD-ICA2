@@ -3,7 +3,7 @@
     import { Link } from "svelte-routing";
     /* import url from './url' */
     const fetchQuestions = (async () => {
-    const response = await fetch('http://localhost:3000/questions')
+    const response = await fetch('/questions')
     return await response.json()
 	})()
     function deleteItem(questionId) {

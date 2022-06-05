@@ -2,11 +2,11 @@
     import Graph from "./Graph.svelte"
     export let id;
     async function getQuestion () {
-        const response = await fetch(`http://localhost:3000/questions/${id}`)
+        const response = await fetch(`/questions/${id}`)
         return await response.json()
 	}
     async function getStats () {
-        const response = await fetch(`http://localhost:3000/stats/${id}`)
+        const response = await fetch(`/stats/${id}`)
         return await response.json()
 	}
     let fetchQuestion = getQuestion();
