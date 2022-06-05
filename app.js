@@ -19,7 +19,7 @@ app.use(morgan("common"));
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-app.use(express.static(path.join(__dirname, "../frontend/public")));
+app.use(express.static(path.join(__dirname, "./client/public")));
 
 // Initializes a connection pool with up to 100 connections,
 // credentials are taken from environment variables

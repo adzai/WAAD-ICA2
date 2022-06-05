@@ -26,6 +26,13 @@
         })
     .catch(function(res){ console.log(res) })
     }
+
+    function changeColor() {
+            let elems = document.getElementsByClassName("answerOption");
+            for (let elem of elems) {
+                elem.style.color='red';
+            }
+    }
 </script>
 {#await fetchQuestion}
     <p>...waiting</p>
@@ -34,7 +41,7 @@
     <ul>
         {#each data[Object.keys(data)[0]] as answer}
           <li>
-          <button on:click={() => vote (answer.id)}>{answer.name}</button>
+          <button class="answerOption" on:click={() => vote (answer.id)}>{answer.name}</button>
           {#if answer.voted}
           <span>Voted</span>
           {/if}
@@ -49,6 +56,7 @@
 {:then data}
     {#each Object.keys(data) as dd}
         {#if data[dd].voted}
+        {changeColor() || ""}
         <p id="userVote">You voted for {data[dd].name}<p>
             <Graph stats={data}/>
         {/if}
