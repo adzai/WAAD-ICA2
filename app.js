@@ -6,7 +6,6 @@ const mysql = require("mysql");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const app = express();
-const cors = require("cors");
 
 // Needed for POST request
 app.use(express.json()); // parses incoming requests with JSON payloads
@@ -47,10 +46,6 @@ app.use(
     },
   })
 );
-
-const allowedOrigins = ["http://localhost:3000", "http://localhost:8080"];
-
-app.use(cors());
 
 // Test connection to db
 let initSQL = "SELECT * FROM questions LIMIT 1";
