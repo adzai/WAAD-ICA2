@@ -6,6 +6,14 @@
     const response = await fetch('http://localhost:3000/questions')
     return await response.json()
 	})()
+    function deleteItem(questionId) {
+        fetch(`/questions/${questionId}`,
+        {
+            method: "DELETE",
+        })
+        .then(function(res){ window.location.href = "/"})
+        .catch(function(res){ console.log(res) })
+    }
 </script>
 
 <h1>Q&A app</h1>
@@ -25,7 +33,7 @@
                 <strong>Question {question.id}: </strong>
                    {question.name}</Link>
          {#if question.canDelete === 1}
-                <button class="button roundButton">Delete</button>
+                <button class="button" id="deleteButton" on:click={() => deleteItem(question.id)}>Delete</button>
          {/if}
           </li>
         {/each}
@@ -42,5 +50,9 @@
 
     #question {
         color: white;
+    }
+
+    #deleteButton {
+        background-color: red;
     }
 </style>

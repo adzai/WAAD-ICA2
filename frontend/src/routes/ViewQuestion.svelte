@@ -1,4 +1,5 @@
 <script>
+    import Graph from "./Graph.svelte"
     export let id;
     async function getQuestion () {
         const response = await fetch(`http://localhost:3000/questions/${id}`)
@@ -26,7 +27,6 @@
     .catch(function(res){ console.log(res) })
     }
 </script>
-
 {#await fetchQuestion}
     <p>...waiting</p>
 {:then data}
@@ -47,13 +47,18 @@
 {#await fetchStats}
     <p>...waiting</p>
 {:then data}
-        {#each Object.keys(data) as dd}
+    {#each Object.keys(data) as dd}
         {#if data[dd].voted}
-        <h3 style="color: red">{data[dd].name}: {data[dd].counter}</h3>
-        {:else}
-        <h3>{data[dd].name}: {data[dd].counter}</h3>
+        <p id="userVote">You voted for {data[dd].name}<p>
+            <Graph stats={data}/>
         {/if}
-        {/each}
+    {/each}
 {:catch error}
     <p style="color: red">{error.message}</p>
 {/await}
+
+<style>
+    #userVote {
+        font-size: 2em;
+    }
+</style>

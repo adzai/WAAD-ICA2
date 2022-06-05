@@ -112,8 +112,7 @@ async function incrementAnswer(id, sessionId) {
 
 // Returns all questions
 app.get("/questions", function (req, res) {
-  const sql =
-    "SELECT id, name, IF(session_id=?, TRUE, FALSE) as canDelete FROM questions";
+  const sql = "SELECT id, name, session_id=? as canDelete FROM questions";
   pool.query(sql, [req.session.id], (err, data) => {
     if (err) {
       logger.error(err);
@@ -253,13 +252,18 @@ app.post("/answers/:id", function (req, res) {
 // Returns a 404 if id not found.
 app.delete("/questions/:id", function (req, res) {
   pool.query(
-    "DELETE FROM questions WHERE id=?",
-    [req.params.id],
+    "DELETE FROM questions WHERE id=? AND session_id=?",
+    [req.params.id, req.session.id],
     (err, data) => {
       if (err) {
-        res.status(404).json({ error: "ID not found" });
+        logger.error(err);
+        res.status(500).json({ error: "Internal server error" });
       } else {
-        res.send("Success");
+        if (data.affectedRows === 0) {
+          res.send("No questions deleted");
+        } else {
+          res.send("Success");
+        }
       }
     }
   );

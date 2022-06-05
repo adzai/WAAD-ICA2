@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS questions (
     name VARCHAR(300) NOT NULL,
     session_id varchar(128) COLLATE utf8mb4_bin NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+    FOREIGN KEY (session_id) REFERENCES sessions(session_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS answers (
@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS answers (
     name VARCHAR(300) NOT NULL,
     counter int DEFAULT 0,
     PRIMARY KEY (id),
-    FOREIGN KEY (question_id) REFERENCES questions(id)
+    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users_answers (
     session_id varchar(128) COLLATE utf8mb4_bin NOT NULL,
     answer_id int NOT NULL,
-    FOREIGN KEY (session_id) REFERENCES sessions(session_id),
-    FOREIGN KEY (answer_id) REFERENCES answers(id)
+    FOREIGN KEY (session_id) REFERENCES sessions(session_id) ON DELETE CASCADE,
+    FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
 );
