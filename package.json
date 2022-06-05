@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "build": "cd client && npm install && npm i rollup && npm run build"
+    "build": "ls -la && cd client && ls -la && npm install && ls -la && npm run build"
   },
   "author": "",
   "license": "ISC",
