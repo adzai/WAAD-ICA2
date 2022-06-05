@@ -28,10 +28,9 @@
         {#each questions as question}
           <li>
                     <Link to={`/question/${question.id}`}
-                   getProps={() => ({ class: "link button roundButton",
-                   id: "question"})}>
-                <strong>Question {question.id}: </strong>
-                   {question.name}</Link>
+                   getProps={() => ({ class: "link button roundButton question"})}>
+                <strong>{question.name}</strong>
+                   </Link>
          {#if question.canDelete === 1}
                 <button class="button" id="deleteButton" on:click={() => deleteItem(question.id)}>Delete</button>
          {/if}
@@ -48,11 +47,13 @@
         color: red;
     }
 
-    #question {
+    .question {
         color: white;
+
     }
 
     #deleteButton {
+        border-radius: 8px;
         background-color: red;
     }
 </style>

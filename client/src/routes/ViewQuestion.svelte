@@ -30,7 +30,15 @@
     function changeColor() {
             let elems = document.getElementsByClassName("answerOption");
             for (let elem of elems) {
-                elem.style.color='#444444';
+                elem.disabled = "disabled";
+                elem.style.background="lightgray";
+                elem.style.color="gray";
+                elem.classList.remove("answerOptionHover");
+                elem.classList.add("answerOptionDisabled");
+            }
+            elems = document.getElementsByClassName("answerText");
+            for (let elem of elems) {
+                elem.style.color="gray";
             }
     }
 </script>
@@ -41,7 +49,9 @@
     <ul>
         {#each data[Object.keys(data)[0]] as answer}
           <li>
-          <button class="answerOption" on:click={() => vote (answer.id)}>{answer.name}</button>
+          <button class="answerOption answerOptionHover" on:click={() => vote (answer.id)}>
+              <p class="answerText">{answer.name}</p>
+          </button>
           {#if answer.voted}
           <span>Voted</span>
           {/if}
@@ -69,4 +79,20 @@
     #userVote {
         font-size: 2em;
     }
+    .answerOption {
+      word-break: break-word;
+      border-radius: 25px;
+      background: #B4C3DA;
+      padding: 20px;
+      width: 75%;
+      height: 20%;
+}
+    .answerText {
+        font-size: 1.5em;
+        color: black;
+    }
+    .answerOptionHover:hover {
+    cursor: pointer;
+    background: #44697A;
+}
 </style>

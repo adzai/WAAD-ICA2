@@ -40,5 +40,47 @@
     });
   }
 </script>
-<button on:click={renderChart}>Show results</button>
+<button class="resultButton" role="button" on:click={renderChart}>Show results</button>
 <canvas id="myChart"></canvas>
+
+<style>
+
+.resultButton {
+  appearance: none;
+  background-color: transparent;
+  border: 2px solid #1A1A1A;
+  border-radius: 15px;
+  box-sizing: border-box;
+  color: #3B3B3B;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0;
+  min-height: 60px;
+  min-width: 0;
+  outline: none;
+  padding: 16px 24px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 95%;
+  will-change: transform;
+}
+
+.resultButton:hover {
+  color: #fff;
+  background-color: #1A1A1A;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.resultButton:active {
+  box-shadow: none;
+  transform: translateY(0);
+}
+</style>

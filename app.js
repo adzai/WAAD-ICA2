@@ -106,7 +106,8 @@ async function incrementAnswer(id, sessionId) {
 
 // Returns all questions
 app.get("/questions", function (req, res) {
-  const sql = "SELECT id, name, session_id=? as canDelete FROM questions";
+  const sql =
+    "SELECT id, name, session_id=? as canDelete FROM questions ORDER BY id DESC";
   pool.query(sql, [req.session.id], (err, data) => {
     if (err) {
       logger.error(err);

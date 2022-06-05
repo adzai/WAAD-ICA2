@@ -56,7 +56,7 @@
 
 <form action="/questions" on:submit|preventDefault={handleSubmit}>
     <h3>Question</h3>
-    <textarea type="text" id="question" name="question"></textarea>
+    <textarea maxlength=100 type="text" id="question" name="question"></textarea>
      {#if errors.question}
             <p class="error-message">Question required</p>
      {/if}
@@ -64,7 +64,7 @@
   <h3>Answers</h3>
   {#each {length: answerCount} as _, i}
       <li class="answersList">
-        <input autocomplete="off" id={`answer${i+1}`} name={`answer${i+1}`}>
+        <input maxlength=100 autocomplete="off" id={`answer${i+1}`} name={`answer${i+1}`}>
       </li>
   {/each}
  {#if errors.answers}
@@ -78,7 +78,7 @@
 <style>
     #question {
         margin-bottom: 2em;
-        width: 30em;
+        width: 80%;
         resize: none;
         overflow: hidden;
     }
