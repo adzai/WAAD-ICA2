@@ -1,12 +1,13 @@
 {
-  "name": "13-mysql-example",
+  "name": "poll app",
   "version": "0.0.1",
   "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "build": "cd client && npm install && npm run build"
+    "build": "cd client && npm install && npm run build",
+    "heroku-postbuild": "rollup -c"
   },
   "author": "",
   "license": "ISC",
