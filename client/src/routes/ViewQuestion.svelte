@@ -30,7 +30,7 @@
     function changeColor() {
             let elems = document.getElementsByClassName("answerOption");
             for (let elem of elems) {
-                elem.style.color='red';
+                elem.style.color='#444444';
             }
     }
 </script>

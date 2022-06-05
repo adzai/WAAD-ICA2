@@ -14,6 +14,7 @@
         let question = false;
         let answers = [];
         let i = 0;
+        let hasErrors = false;
         for (const [key, value] of formData.entries()) {
            if (key === "question") {
                question = value;
@@ -26,14 +27,17 @@
         }
         if (!question || question === "") {
             errors["question"] = true;
+            hasErrors = true;
         } else {
             errors["question"] = false;
         }
         if (answers.length < 2 || answers.length > 6) {
             errors["answers"] = true;
+            hasErrors = true;
         } else {
             errors["answers"] = false;
         }
+        if (!hasErrors) {
         fetch("/questions",
 {
     headers: {
@@ -46,6 +50,7 @@
 .then(function(res){ window.location.href = "/"})
 .catch(function(res){ console.log(res) })
     }
+}
 </script>
 <h1>Create a poll</h1>
 
