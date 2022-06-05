@@ -87,6 +87,7 @@
       padding: 20px;
       width: 50%;
       height: 6em;
+      overflow:hidden;
 }
     .answerOptionHover:hover {
     cursor: pointer;
