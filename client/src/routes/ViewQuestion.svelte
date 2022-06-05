@@ -21,8 +21,8 @@
     method: "POST",
 })
     .then(function(res){
-        fetchQuestion = getQuestion();
         fetchStats = getStats();
+        changeColor();
         })
     .catch(function(res){ console.log(res) })
     }
