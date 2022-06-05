@@ -6,6 +6,11 @@ const mysql = require("mysql");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const app = express();
+// Require .env config only for dev environments
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+const port = process.env.PORT || 3000; // Port the server will listen on
 
 // Needed for POST request
 app.use(express.json()); // parses incoming requests with JSON payloads
@@ -14,10 +19,7 @@ app.use(express.urlencoded({ extended: true })); // Parses incoming request obje
 // Logging HTTP requests
 app.use(morgan("common"));
 
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
-const port = process.env.PORT || 3000; // Port the server will listen on
+// Serving static frontend files, they need to be compiled first via npm run build
 app.use(express.static(path.join(__dirname, "./client/public")));
 
 // Initializes a connection pool with up to 100 connections,
@@ -30,8 +32,8 @@ let pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
+// Initializing sessions, they are saved in a MySQL table
 let sessionStore = new MySQLStore({}, pool);
-
 app.use(
   session({
     name: process.env.SESS_NAME,
@@ -46,7 +48,7 @@ app.use(
   })
 );
 
-// Test connection to db
+// Test the connection to db
 let initSQL = "SELECT * FROM questions LIMIT 1";
 pool.query(initSQL, (err, data) => {
   if (err) {
@@ -56,7 +58,7 @@ pool.query(initSQL, (err, data) => {
   logger.info("Connected to the MySQL server.");
 });
 
-// Example of incrementing answer counter
+// Incrementing the number of votes for a given answer
 async function incrementAnswer(id, sessionId) {
   const connection = await new Promise((resolve, reject) => {
     pool.getConnection((ex, connection) => {
@@ -104,7 +106,7 @@ async function incrementAnswer(id, sessionId) {
   }
 }
 
-// Returns all questions
+// Returns all questions from the db
 app.get("/questions", function (req, res) {
   const sql =
     "SELECT id, name, session_id=? as canDelete FROM questions ORDER BY id DESC";
@@ -121,7 +123,8 @@ app.get("/questions", function (req, res) {
   });
 });
 
-async function insertQuestion(req, res) {
+// Inserts questions and answers to the db
+async function insertQuestion(jsonData, sessionId) {
   const connection = await new Promise((resolve, reject) => {
     pool.getConnection((ex, connection) => {
       if (ex) {
@@ -135,14 +138,14 @@ async function insertQuestion(req, res) {
     await connection.beginTransaction();
     await connection.query(
       "INSERT INTO questions(name,session_id) VALUES(?,?)",
-      [req.body.question, req.session.id],
+      [jsonData.question, sessionId],
       async (err, data) => {
         if (err) {
           logger.error(err);
         } else {
-          logger.debug(`Question inserted by id ${req.session.id}`);
-          logger.debug(`Data: ${JSON.stringify(data)}`);
-          for (const answer of req.body.answers) {
+          logger.debug(`Question inserted by id ${sessionId}`);
+          logger.debug(`Data: ${JSON.stringify(jsonData)}`);
+          for (const answer of jsonData.answers) {
             await connection.query(
               "INSERT INTO answers(name,question_id) VALUES(?,?)",
               [answer, data.insertId],
@@ -150,7 +153,7 @@ async function insertQuestion(req, res) {
                 if (err) {
                   logger.error(err);
                 } else {
-                  logger.debug(`Answer inserted by id ${req.session.id}`);
+                  logger.debug(`Answer inserted by id ${sessionId}`);
                 }
               }
             );
@@ -167,13 +170,25 @@ async function insertQuestion(req, res) {
   }
 }
 // Inserts a new user to the test_table.
-// POST params are: id, name, value
+// POST params is a JSON in format
+// {"question": questionValue, "answers": [array of 2-6 strings]}
 // Returns the sql error message if there was a problem inserting
 app.post("/questions", function (req, res) {
-  insertQuestion(req, res).then();
-  res.send();
+  let jsonData = req.body;
+  if (
+    jsonData.hasOwnProperty("question") &&
+    jsonData.hasOwnProperty("answers") &&
+    jsonData.answers.length >= 2 &&
+    jsonData.answers.length <= 6
+  ) {
+    insertQuestion(jsonData, req.session.id).then(res.send("Success"));
+  } else {
+    res.status(400).json({ error: "Incorrect POST JSON data" });
+  }
 });
 
+// Returns a question with the associated answers from the db.
+// The returned JSON is: {"<Name of the question>": [{"name": "<answer name>", id: <answer id>} ...]}
 app.get("/questions/:id", function (req, res) {
   pool.query(
     "SELECT q.name as question_name, a.name, a.counter, a.id FROM answers a LEFT JOIN questions q ON q.id=a.question_id WHERE q.id=? ORDER BY a.id",
@@ -202,6 +217,13 @@ app.get("/questions/:id", function (req, res) {
   );
 });
 
+// Returns stats (number of votes for each answer) for a given question
+// Return format:
+// {<Answer id>:
+//     {"name": "<answer name>", "counter": <number of votes>,
+//         "voted": <true if user voted on this answer, false otherwise>
+//     }
+// ...}
 app.get("/stats/:id", (req, res) => {
   pool.query(
     "SELECT answer_id FROM answers a LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE a.question_id=? AND ua.session_id=?",
@@ -239,10 +261,13 @@ app.get("/stats/:id", (req, res) => {
   );
 });
 
+// Increments the vote counter for a given answer if the user has not yet
+// voted on the associated question
 app.post("/answers/:id", function (req, res) {
   incrementAnswer(req.params.id, req.session.id);
   res.send();
 });
+
 // Deletes a question from the questions table based on provided id.
 // Returns a 404 if id not found.
 app.delete("/questions/:id", function (req, res) {
