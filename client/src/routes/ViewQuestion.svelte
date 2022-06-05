@@ -9,6 +9,16 @@
         const response = await fetch(`/stats/${id}`)
         return await response.json()
 	}
+    function changeColor() {
+            let elems = document.getElementsByClassName("answerOption");
+            for (let elem of elems) {
+                elem.disabled = "disabled";
+                elem.style.color="gray";
+                elem.style.background="lightgray";
+                elem.style.color="gray";
+                elem.classList.remove("answerOptionHover");
+            }
+    }
     let fetchQuestion = getQuestion();
     let fetchStats = getStats();
     function vote(answerId) {
@@ -27,17 +37,6 @@
     .catch(function(res){ console.log(res) })
     }
 
-    function changeColor() {
-            let elems = document.getElementsByClassName("answerOption");
-            for (let elem of elems) {
-                elem.disabled = "disabled";
-                elem.style.color="gray";
-                elem.style.background="lightgray";
-                elem.style.color="gray";
-                elem.classList.remove("answerOptionHover");
-                elem.classList.add("answerOptionDisabled");
-            }
-    }
 </script>
 {#await fetchQuestion}
     <p>...waiting</p>
@@ -49,9 +48,6 @@
           <button class="answerOption answerOptionHover" on:click={() => vote (answer.id)}>
               {answer.name}
           </button>
-          {#if answer.voted}
-          <span>Voted</span>
-          {/if}
           </li>
         {/each}
       </ul>
@@ -76,14 +72,16 @@
     #userVote {
         font-size: 2em;
     }
+    li {
+        padding: 1em 1em;
+    }
     .answerOption {
       word-break: break-word;
       border-radius: 25px;
       background: #B4C3DA;
-      font-size: 1.5em;
+      font-size: 1em;
       padding: 20px;
-      width: 50%;
-      height: 6em;
+      width: 30%;
       overflow:hidden;
 }
     .answerOptionHover:hover {

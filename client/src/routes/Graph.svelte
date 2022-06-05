@@ -3,6 +3,7 @@
   import Chart from 'chart.js/auto/auto.esm';
   export let stats;
   function renderChart() {
+    document.getElementById('showResults').remove();
     var ctx = document.getElementById("myChart").getContext("2d");
     let labels = [];
     let data = [];
@@ -36,14 +37,24 @@
           }
         ]
       },
-      options: {}
+      options: {
+          responsive: true,
+      }
     });
   }
 </script>
-<button class="resultButton" role="button" on:click={renderChart}>Show results</button>
+<button id="showResults" class="resultButton" role="button" on:click={renderChart}>Show results</button>
 <canvas id="myChart"></canvas>
 
 <style>
+/* canvas{ */
+
+/*   height:50vh !important; */
+/*   width:50vw !important; */
+/*   margin: 0 auto; */
+/*   text-align: center !important; */
+
+/* } */
 
 .resultButton {
   appearance: none;
