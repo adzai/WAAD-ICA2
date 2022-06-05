@@ -6,20 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "build": "ls -la && cd client && ls -la && npm install && ls -la && npm run build"
+    "build": "cd client && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@rollup/plugin-commonjs": "^22.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.17.3",
     "express-mysql-session": "^2.1.8",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
-    "rollup": "^2.75.5",
-    "rollup-plugin-svelte": "^7.1.0",
     "winston": "^3.7.2"
   }
 }
