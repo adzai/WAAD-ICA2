@@ -176,7 +176,7 @@ app.post("/questions", function (req, res) {
 
 app.get("/questions/:id", function (req, res) {
   pool.query(
-    "SELECT DISTINCT q.name as question_name, a.name, a.counter, a.id FROM answers a LEFT JOIN questions q ON q.id=a.question_id LEFT JOIN users_answers ua ON ua.answer_id=a.id WHERE q.id=? ORDER BY a.id",
+    "SELECT q.name as question_name, a.name, a.counter, a.id FROM answers a LEFT JOIN questions q ON q.id=a.question_id WHERE q.id=? ORDER BY a.id",
     [req.params.id],
     (err, data) => {
       if (err) {

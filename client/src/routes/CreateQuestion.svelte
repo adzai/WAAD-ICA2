@@ -70,7 +70,7 @@
  {#if errors.answers}
         <p class="error-message">At least 2 answers required</p>
  {/if}
- <button class="addButton" type="button" on:click={updateAnswerCount}>+</button>
+ <button id="addButton" type="button" on:click={updateAnswerCount}>+</button>
  </ul>
  <button class="submitButton" type="submit">Submit</button>
 </form>
@@ -78,7 +78,7 @@
 <style>
     #question {
         margin-bottom: 2em;
-        width: 80%;
+        width: 30%;
         resize: none;
         overflow: hidden;
     }
@@ -105,5 +105,8 @@
           background-color: green;
           color: white;
         }
+
+    #addButton {
+    }
 
 </style>

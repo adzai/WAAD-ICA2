@@ -31,14 +31,11 @@
             let elems = document.getElementsByClassName("answerOption");
             for (let elem of elems) {
                 elem.disabled = "disabled";
+                elem.style.color="gray";
                 elem.style.background="lightgray";
                 elem.style.color="gray";
                 elem.classList.remove("answerOptionHover");
                 elem.classList.add("answerOptionDisabled");
-            }
-            elems = document.getElementsByClassName("answerText");
-            for (let elem of elems) {
-                elem.style.color="gray";
             }
     }
 </script>
