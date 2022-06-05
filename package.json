@@ -17,6 +17,7 @@
     "express-mysql-session": "^2.1.8",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "rollup": "^2.75.5",
     "winston": "^3.7.2"
   }
 }
