@@ -32,7 +32,7 @@
                 <strong>{question.name}</strong>
                    </Link>
          {#if question.canDelete === 1}
-                <button class="button" id="deleteButton" on:click={() => deleteItem(question.id)}>Delete</button>
+                <br><button class="button" id="deleteButton" on:click={() => deleteItem(question.id)}>Delete</button>
          {/if}
           </li>
         {/each}
@@ -46,10 +46,17 @@
         text-decoration: none;
         color: red;
     }
+    strong {
+        font-size: 1.5em;
+    }
+    @media (max-width: 600px) {
+        strong {
+            font-size: 70%;
+        }
+    }
 
     .question {
         color: white;
-
     }
 
     #deleteButton {

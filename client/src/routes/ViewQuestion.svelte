@@ -84,8 +84,8 @@
       border-radius: 25px;
       background: #B4C3DA;
       padding: 20px;
-      width: 75%;
-      height: 20%;
+      width: 50%;
+      height: 6em;
 }
     .answerText {
         font-size: 1.5em;
