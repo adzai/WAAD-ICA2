@@ -50,7 +50,7 @@
         {#each data[Object.keys(data)[0]] as answer}
           <li>
           <button class="answerOption answerOptionHover" on:click={() => vote (answer.id)}>
-              <p class="answerText">{answer.name}</p>
+              {answer.name}
           </button>
           {#if answer.voted}
           <span>Voted</span>
@@ -83,14 +83,11 @@
       word-break: break-word;
       border-radius: 25px;
       background: #B4C3DA;
+      font-size: 1.5em;
       padding: 20px;
       width: 50%;
       height: 6em;
 }
-    .answerText {
-        font-size: 1.5em;
-        color: black;
-    }
     .answerOptionHover:hover {
     cursor: pointer;
     background: #44697A;
