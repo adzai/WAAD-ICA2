@@ -1,6 +1,7 @@
 <script>
     import Chart from "chart.js/auto/auto.esm";
-    export let stats;
+    export let stats; // Stats passed in from ViewQuestion component
+    // Renders chart.js with relevant data gathered from exported stats from above
     function renderChart() {
         document.getElementById("showResults").remove();
         var ctx = document.getElementById("myChart").getContext("2d");
@@ -51,15 +52,6 @@
 <canvas id="myChart" />
 
 <style>
-    /* canvas{ */
-
-    /*   height:50vh !important; */
-    /*   width:50vw !important; */
-    /*   margin: 0 auto; */
-    /*   text-align: center !important; */
-
-    /* } */
-
     .resultButton {
         appearance: none;
         background-color: transparent;

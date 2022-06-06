@@ -3,7 +3,6 @@
     import Home from "./routes/Home.svelte";
     import ViewQuestion from "./routes/ViewQuestion.svelte";
     import CreateQuestion from "./routes/CreateQuestion.svelte";
-    // Routing issues: https://github.com/sveltejs/kit/issues/2664
     let url = "";
 </script>
 

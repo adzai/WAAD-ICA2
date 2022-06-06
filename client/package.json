@@ -19,10 +19,7 @@
   },
   "dependencies": {
     "chart.js": "^3.8.0",
-    "mdbsvelte": "^1.0.12",
-    "page": "^1.11.6",
     "sirv-cli": "^2.0.0",
-    "svelte-chartjs": "^1.1.4",
     "svelte-routing": "^1.6.0"
   }
 }
